@@ -1,0 +1,21 @@
+[default]
+NEO4J_URL = ''
+NEO4J_USER = ''
+NEO4J_PASSWD = ''
+
+[development]
+NEO4J_URL = ''
+NEO4J_USER = ''
+NEO4J_PASSWD = ''
+
+[production]
+NEO4J_URL = ''
+NEO4J_USER = ''
+NEO4J_PASSWD = ''
+
+[testing]
+NEO4J_URL = ''
+NEO4J_USER = ''
+NEO4J_PASSWD = ''
+
+[global]
