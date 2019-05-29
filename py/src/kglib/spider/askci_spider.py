@@ -1,3 +1,6 @@
+'''
+从中商情报网[http://s.askci.com]获取上市公司信息
+'''
 
 import pandas as pd
 

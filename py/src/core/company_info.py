@@ -3,8 +3,29 @@
 from dynaconf import settings
 from py2neo.data import Node, Relationship
 from py2neo import Graph, GraphError
-from model import Company, Person
-from kglib.spider import AskciSpider
+from model import Company, Person, ListedCompany
+from model import collect_stock_markets
+from kglib.spider import AskciSpider, TushareSpider, JoinQuantSpider
+from kglib.utils import dbhelper
+from . import constants
+
+def fetch_stock_list():
+
+    g = Graph(settings.NEO4J_URL, auth=(settings.NEO4J_USER, settings.NEO4J_PASSWD))
+
+    markets = collect_stock_markets()
+    for market in markets:
+        g.push(market)
+
+    ts = TushareSpider()
+    listed_companies = ts.sync_stock_info()
+
+    for index, row in listed_companies.iterrows():  
+        c = ListedCompany()
+        c.name = row[TushareSpider.LISTED_COMPANY_FULLNAME]
+        c.add_markets(row[TushareSpider.LISTED_COMPANY_EXCHANGE], row[TushareSpider.LISTED_COMPANY_SYMBOL])
+        g.push(c)
+        
 
 def fetch_company_info(name, code):
 
@@ -52,3 +73,17 @@ def fetch_company_info(name, code):
         g.push(p)
 
     g.push(a)
+
+def sync_listed_company_info():
+    '''
+    获取上市公司基本信息
+    '''
+
+    jq = JoinQuantSpider(settings.JOINQUANT_USER, settings.JOINQUANT_PASSWD)
+    df = jq.fetch_company_info()
+    if df.empty:
+        return
+
+    dbhelper.save_df_to_mysql(df, settings.MYSQL_USER, settings.MYSQL_PASSWD, 
+        settings.MYSQL_DB, constants.DB_TABLE_STK_COMPANY_INFO)
+    

@@ -2,13 +2,14 @@
 from py2neo.ogm import GraphObject, Property, RelatedTo, RelatedFrom 
 
 from .person import Person
+from .exchange import StockExchange
 
 class Company(GraphObject):
 
     __primarykey__ = "name"
 
     name = Property()
-    code = Property()
+    # code = Property()
 
     subsidiary = RelatedTo("Company", "子公司")
     subsubsidiary = RelatedTo("Company", "孙公司")
@@ -49,5 +50,20 @@ class Company(GraphObject):
         '''
         
         self.exectives.add(p)
-            
-            
+
+class ListedCompany(Company):
+    '''
+    上市公司
+    '''
+
+    markets = RelatedTo("StockExchange", "上市")
+
+    def add_markets(self, market, code):
+        se = StockExchange(market)
+        props = {"code": code}
+        self.markets.add(se, props)
+
+class UnlistedCompany(Company):
+    '''
+    非上市公司
+    '''

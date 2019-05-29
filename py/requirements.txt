@@ -3,3 +3,9 @@ pandas
 lxml
 py2neo
 dynaconf
+pyhanlp
+pkuseg
+thulac
+stanfordcorenlp
+tushare
+jqdatasdk
