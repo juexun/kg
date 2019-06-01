@@ -15,3 +15,32 @@ class JoinQuantSpider:
         df = finance.run_query(query(finance.STK_COMPANY_INFO))
         df = df.iloc[:, 2:]
         return df
+
+    def fetch_employee_info(self):
+        df = finance.run_query(query(finance.STK_EMPLOYEE_INFO))
+        df = df.iloc[:, 2:]
+        return df
+
+    def fetch_management_info(self):
+        df = finance.run_query(query(finance.STK_MANAGEMENT_INFO))
+        df = df.iloc[:, 2:]
+        cols = list(df)
+        cols.insert(0, cols.pop(cols.index('code')))
+        df = df.loc[:, cols]
+        return df
+
+    def fetch_shareholder_top10(self):
+        df = finance.run_query(query(finance.STK_SHAREHOLDER_TOP10))
+        df = df.drop(['id', 'company_id'], axis=1)
+        cols = list(df)
+        cols.insert(0, cols.pop(cols.index('code')))
+        df = df.loc[:, cols]
+        return df
+
+    def fetch_shareholder_floating_top10(self):
+        df = finance.run_query(query(finance.STK_SHAREHOLDER_FLOATING_TOP10))
+        df = df.drop(['id', 'company_id'], axis=1)
+        cols = list(df)
+        cols.insert(0, cols.pop(cols.index('code')))
+        df = df.loc[:, cols]
+        return df
