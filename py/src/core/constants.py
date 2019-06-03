@@ -17,3 +17,6 @@ DB_TABLE_STK_EMPLOYEE_INFO = "stock_employee_info"
 
 # 管理人员任职信息
 DB_TABLE_STK_MANAGEMENT_INFO = "stock_management_info"
+
+# 公募基金主体信息
+DB_TABLE_FUND_MAIN_INFO = "fund_main_info"

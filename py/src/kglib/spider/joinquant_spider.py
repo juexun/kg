@@ -44,3 +44,8 @@ class JoinQuantSpider:
         cols.insert(0, cols.pop(cols.index('code')))
         df = df.loc[:, cols]
         return df
+
+    def fetch_fund_info(self):
+        df = finance.run_query(query(finance.FUND_MAIN_INFO))
+        df = df.drop(['id'], axis=1)
+        return df

@@ -80,17 +80,23 @@ def sync_listed_company_info():
     '''
 
     jq = JoinQuantSpider(settings.JOINQUANT_USER, settings.JOINQUANT_PASSWD)
+    df = jq.fetch_fund_info()
+    if df is None or df.empty:
+        return
+    dbhelper.save_df_to_mysql(df, settings.MYSQL_USER, settings.MYSQL_PASSWD, 
+        settings.MYSQL_DB, constants.DB_TABLE_FUND_MAIN_INFO)
+
     # df = jq.fetch_shareholder_floating_top10()
     # if df is None or df.empty:
     #     return
     # dbhelper.save_df_to_mysql(df, settings.MYSQL_USER, settings.MYSQL_PASSWD, 
     #     settings.MYSQL_DB, constants.DB_TABLE_STK_SHAREHOLDER_FLOATING_TOP10)
 
-    df = jq.fetch_shareholder_top10()
-    if df is None or df.empty:
-        return
-    dbhelper.save_df_to_mysql(df, settings.MYSQL_USER, settings.MYSQL_PASSWD, 
-        settings.MYSQL_DB, constants.DB_TABLE_STK_SHAREHOLDER_TOP10)
+    # df = jq.fetch_shareholder_top10()
+    # if df is None or df.empty:
+    #     return
+    # dbhelper.save_df_to_mysql(df, settings.MYSQL_USER, settings.MYSQL_PASSWD, 
+    #     settings.MYSQL_DB, constants.DB_TABLE_STK_SHAREHOLDER_TOP10)
 
     # df = jq.fetch_management_info()
     # if df is None or df.empty:
