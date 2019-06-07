@@ -2,11 +2,12 @@
 
 from dynaconf import settings
 from py2neo.data import Node, Relationship
-from py2neo import Graph, GraphError
+from py2neo import Graph, GraphError, NodeMatcher
 from model import Company, Person, ListedCompany
+from model import StockCompanyInfo
 from model import collect_stock_markets
 from kglib.spider import AskciSpider, TushareSpider, JoinQuantSpider
-from kglib.utils import dbhelper
+from kglib.utils import dbhelper, new_db_session
 from . import constants
 
 def fetch_stock_list():
@@ -83,8 +84,7 @@ def sync_listed_company_info():
     df = jq.fetch_fund_info()
     if df is None or df.empty:
         return
-    dbhelper.save_df_to_mysql(df, settings.MYSQL_USER, settings.MYSQL_PASSWD, 
-        settings.MYSQL_DB, constants.DB_TABLE_FUND_MAIN_INFO)
+    dbhelper.save_df_to_mysql(df, constants.DB_TABLE_FUND_MAIN_INFO)
 
     # df = jq.fetch_shareholder_floating_top10()
     # if df is None or df.empty:
@@ -116,4 +116,16 @@ def sync_listed_company_info():
     #     return
     # dbhelper.save_df_to_mysql(df, settings.MYSQL_USER, settings.MYSQL_PASSWD, 
     #     settings.MYSQL_DB, constants.DB_TABLE_STK_COMPANY_INFO)
+
+def map_company_info(code):
+    '''映射公司信息'''
+
+    # g = Graph(settings.NEO4J_URL, auth=(settings.NEO4J_USER, settings.NEO4J_PASSWD))
+    # matcher = NodeMatcher(g)
+    # industry = matcher.match("行业", name="采矿业").first()
     
+    session = new_db_session()
+
+    company = session.query(StockCompanyInfo).filter(StockCompanyInfo.a_code == code).first()
+    
+    session.close()

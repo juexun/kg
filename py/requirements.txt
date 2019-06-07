@@ -9,3 +9,4 @@ thulac
 stanfordcorenlp
 tushare
 jqdatasdk
+tabula-py

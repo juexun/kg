@@ -11,3 +11,9 @@
 - [中商情报网](http://s.askci.com/)
 - [聚宽量化](https://www.joinquant.com/)
 - [Tushare](https://tushare.pro/)
+
+## 股票板块分类
+
+- [上市公司行业分类指引](http://www.capco.org.cn/list/hyfl_result.shtml)
+- 地域分类
+- 概念分类

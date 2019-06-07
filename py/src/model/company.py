@@ -1,4 +1,4 @@
-
+# coding: utf-8
 from py2neo.ogm import GraphObject, Property, RelatedTo, RelatedFrom 
 
 from .person import Person
@@ -55,6 +55,8 @@ class ListedCompany(Company):
     '''
     上市公司
     '''
+
+    __primarylabel__ = "上市公司"
 
     markets = RelatedTo("StockExchange", "上市")
 
