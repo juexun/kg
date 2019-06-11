@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 
 
-from core import init_envs, sync_listed_company_info, map_company_info
+from core import init_envs, map_company_info, map_all_companies_info, map_all_company_managers
 
 if __name__ == '__main__':
 
     init_envs()
-    map_company_info("601318")
+    # map_all_company_managers()
+    map_all_companies_info()
     # ts = fetch_stock_list()
     # sync_listed_company_info()
 

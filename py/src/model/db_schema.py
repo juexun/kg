@@ -10,16 +10,18 @@ metadata = Base.metadata
 class FundMainInfo(Base):
     __tablename__ = 'fund_main_info'
 
-    main_code = Column(VARCHAR(12), primary_key=True, doc="代码")
-    name = Column(VARCHAR(100), doc="简称")
-    advisor = Column(VARCHAR(100), doc="管理人")
-    trustee = Column(VARCHAR(100), doc="托管人")
+    main_code = Column(VARCHAR(12), primary_key=True)
+    name = Column(VARCHAR(100))
+    fullname = Column(VARCHAR(100))
+    advisor = Column(VARCHAR(100))
+    trustee = Column(VARCHAR(100))
+    manager = Column(VARCHAR(32))
     operate_mode_id = Column(INTEGER(20))
-    operate_mode = Column(VARCHAR(32), doc="运作方式")
+    operate_mode = Column(VARCHAR(32))
     underlying_asset_type_id = Column(INTEGER(20))
-    underlying_asset_type = Column(VARCHAR(32), doc="投资标的类型")
-    start_date = Column(Date, doc="成立时间")
-    end_date = Column(Date, doc="结束时间")
+    underlying_asset_type = Column(VARCHAR(32))
+    start_date = Column(Date)
+    end_date = Column(Date)
 
 
 class StockBlockInfo(Base):

@@ -10,3 +10,4 @@ stanfordcorenlp
 tushare
 jqdatasdk
 tabula-py
+html5lib
