@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from dynaconf import settings
+from sqlalchemy import distinct
 
 from py2neo.data import Node, Relationship
 from py2neo import Graph, GraphError, NodeMatcher
@@ -9,6 +10,7 @@ from model import Company, Person, ListedCompany
 from model import StockCompanyInfo
 from model import StockManagementInfo
 from model import collect_stock_markets
+
 from kglib.spider import AskciSpider, TushareSpider, JoinQuantSpider
 from kglib.utils import dbhelper, new_db_session
 from kglib.utils import neo4jhelper
@@ -80,6 +82,24 @@ def fetch_company_info(name, code):
 
     g.push(a)
 
+def sync_company_management():
+    '''获取上市公司高管信息'''
+
+    jq = JoinQuantSpider(settings.JOINQUANT_USER, settings.JOINQUANT_PASSWD)
+
+    session = new_db_session()
+
+    companies = session.query(StockCompanyInfo).all()
+    for company in companies:
+        df = jq.fetch_management_info(company.a_code)
+        if df is None or df.empty:
+            print(company.full_name + " is 404 ")
+            continue
+
+        dbhelper.save_df_to_mysql(df, constants.DB_TABLE_STK_MANAGEMENT_INFO)
+
+    session.close()
+
 def sync_listed_company_info():
     '''
     获取上市公司基本信息
@@ -117,7 +137,34 @@ def sync_listed_company_info():
     # dbhelper.save_df_to_mysql(df, settings.MYSQL_USER, settings.MYSQL_PASSWD, 
     #     settings.MYSQL_DB, constants.DB_TABLE_STK_COMPANY_INFO)
 
+def map_all_managers_resume():
+    '''导入高管简历'''
+
+    g = Graph(settings.NEO4J_URL, auth=(settings.NEO4J_USER, settings.NEO4J_PASSWD))
+
+    session = new_db_session()
+
+    managers = session.query(StockManagementInfo.name, StockManagementInfo.highest_degree, 
+                StockManagementInfo.profession_certificate).\
+                distinct(StockManagementInfo.person_id).all()
+    
+    for manager in managers:
+        person = neo4jhelper.graph_create_node(g, constants.NEO4J_LABEL_PERSON, manager.name)
+
+        degree = neo4jhelper.graph_create_node(g, constants.NEO4J_LABEL_DEGREE, manager.highest_degree)
+        neo4jhelper.graph_create_relation(g, person, constants.NEO4J_RELTYPE_HIGHESTDEGREE, degree)
+
+        if manager.profession_certificate is None:
+            continue
+
+        for cert in manager.profession_certificate.split(','):
+            certificate = neo4jhelper.graph_create_node(g, constants.NEO4J_LABEL_CERTIFICATE, cert)
+            neo4jhelper.graph_create_relation(g, person, constants.NEO4J_RELTYPE_CERT, certificate)
+        
+    session.close()
+
 def map_all_company_managers():
+    '''导入所有在职公司高管'''
 
     session = new_db_session()
 
